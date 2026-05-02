@@ -64,6 +64,15 @@ public class FarmerOrderServlet extends HttpServlet {
         Optional<Product> product = productRepository.findById(order.getProductId());
         String productName = product.map(Product::getName).orElse("(unknown product)");
 
+        String status = order.getStatus();
+        if ("ACTIVE".equals(status) || status == null) {
+            long minutes = java.time.Duration.between(order.getCreatedAt(), Instant.now()).toMinutes();
+            if (minutes < 3) status = "PLACED";
+            else if (minutes < 8) status = "PACKING";
+            else if (minutes < 20) status = "IN_TRANSIT";
+            else status = "DELIVERED";
+        }
+
         return new OrderView(
                 order.getId(),
                 order.getProductId(),
@@ -72,8 +81,77 @@ public class FarmerOrderServlet extends HttpServlet {
                 order.getQuantity(),
                 order.getLocation(),
                 order.getPhoneNumber(),
-                order.getCreatedAt()
+                order.getCreatedAt(),
+                status
         );
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = requireFarmer(req, resp);
+        if (user == null) {
+            return;
+        }
+
+        String pathInfo = normalizePathInfo(req);
+        if (pathInfo == null || pathInfo.equals("/") || !pathInfo.endsWith("/status")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path");
+            return;
+        }
+
+        String[] parts = pathInfo.split("/");
+        if (parts.length != 3) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path format");
+            return;
+        }
+
+        String orderIdStr = parts[1];
+        UUID orderId;
+        try {
+            orderId = UUID.fromString(orderIdStr);
+        } catch (IllegalArgumentException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID");
+            return;
+        }
+
+        UpdateStatusRequest updateReq;
+        try {
+            updateReq = MAPPER.readValue(req.getInputStream(), UpdateStatusRequest.class);
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON body");
+            return;
+        }
+
+        if (updateReq.status == null || updateReq.status.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Status is required");
+            return;
+        }
+
+        Optional<Order> orderOpt = orderRepository.findByFarmerId(user.getId()).stream()
+                .filter(o -> o.getId().equals(orderId))
+                .findFirst();
+
+        if (orderOpt.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Order not found");
+            return;
+        }
+
+        Order order = orderOpt.get();
+        if ("CANCELLED".equals(order.getStatus())) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot change status of a cancelled order");
+            return;
+        }
+
+        orderRepository.save(order.withStatus(updateReq.status));
+
+        resp.setStatus(HttpServletResponse.SC_OK);
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "Order status updated successfully");
+        writeJson(resp, result);
+    }
+
+    public static class UpdateStatusRequest {
+        public String status;
     }
 
     private User requireFarmer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -130,6 +208,7 @@ public class FarmerOrderServlet extends HttpServlet {
         public String location;
         public String phoneNumber;
         public Instant createdAt;
+        public String status;
 
         public OrderView(UUID id,
                          long productId,
@@ -138,7 +217,8 @@ public class FarmerOrderServlet extends HttpServlet {
                          int quantity,
                          String location,
                          String phoneNumber,
-                         Instant createdAt) {
+                         Instant createdAt,
+                         String status) {
             this.id = id;
             this.productId = productId;
             this.productName = productName;
@@ -147,6 +227,7 @@ public class FarmerOrderServlet extends HttpServlet {
             this.location = location;
             this.phoneNumber = phoneNumber;
             this.createdAt = createdAt;
+            this.status = status;
         }
 
         public UUID getId() {
@@ -179,6 +260,10 @@ public class FarmerOrderServlet extends HttpServlet {
 
         public Instant getCreatedAt() {
             return createdAt;
+        }
+
+        public String getStatus() {
+            return status;
         }
     }
 }

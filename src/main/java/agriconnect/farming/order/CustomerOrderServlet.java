@@ -5,6 +5,7 @@ import agriconnect.farming.auth.JsonSupport;
 import agriconnect.farming.auth.Role;
 import agriconnect.farming.auth.SessionKeys;
 import agriconnect.farming.auth.User;
+import agriconnect.farming.auth.UserRepository;
 import agriconnect.farming.product.Product;
 import agriconnect.farming.product.ProductRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -17,10 +18,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 
 @WebServlet(name = "customerOrderServlet", urlPatterns = "/api/customer/orders/*")
 public class CustomerOrderServlet extends HttpServlet {
@@ -30,7 +30,33 @@ public class CustomerOrderServlet extends HttpServlet {
 
     private final OrderRepository orderRepository = OrderRepository.getInstance();
     private final ProductRepository productRepository = ProductRepository.getInstance();
+    private final UserRepository userRepository = new UserRepository();
     private final AuthService authService = AuthService.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = requireCustomer(req, resp);
+        if (user == null) {
+            return;
+        }
+
+        String pathInfo = normalizePathInfo(req);
+        if (!"/".equals(pathInfo)) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        List<OrderView> orders = new ArrayList<>();
+        for (Order order : orderRepository.findByCustomerId(user.getId())) {
+            orders.add(toView(order));
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("orders", orders);
+        response.put("count", orders.size());
+        
+        resp.setStatus(HttpServletResponse.SC_OK);
+        writeJson(resp, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -84,7 +110,9 @@ public class CustomerOrderServlet extends HttpServlet {
         }
 
         if (product.get().getStock() < quantity) {
-            jsonError(resp, HttpServletResponse.SC_BAD_REQUEST, "Not enough stock available");
+            int stockLeft = product.get().getStock();
+            jsonError(resp, HttpServletResponse.SC_BAD_REQUEST,
+                    "Out of stock. Only " + stockLeft + " item" + (stockLeft == 1 ? "" : "s") + " left");
             return;
         }
 
@@ -105,6 +133,106 @@ public class CustomerOrderServlet extends HttpServlet {
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
         writeJson(resp, order);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = requireCustomer(req, resp);
+        if (user == null) {
+            return;
+        }
+
+        String pathInfo = normalizePathInfo(req);
+        if ("/".equals(pathInfo) || pathInfo.length() <= 1) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Order ID required");
+            return;
+        }
+
+        String orderIdStr = pathInfo.substring(1);
+        UUID orderId;
+        try {
+            orderId = UUID.fromString(orderIdStr);
+        } catch (IllegalArgumentException e) {
+            jsonError(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid Order ID");
+            return;
+        }
+
+        Optional<Order> orderOpt = orderRepository.findByCustomerId(user.getId()).stream()
+                .filter(o -> o.getId().equals(orderId))
+                .findFirst();
+
+        if (orderOpt.isEmpty()) {
+            jsonError(resp, HttpServletResponse.SC_NOT_FOUND, "Order not found");
+            return;
+        }
+
+        Order order = orderOpt.get();
+        if ("CANCELLED".equals(order.getStatus()) || "DELIVERED".equals(deriveStatus(order.getCreatedAt(), order.getStatus()))) {
+            jsonError(resp, HttpServletResponse.SC_BAD_REQUEST, "Order cannot be cancelled at this stage");
+            return;
+        }
+
+        orderRepository.save(order.withStatus("CANCELLED"));
+        
+        // Restore stock
+        Optional<Product> productOpt = productRepository.findById(order.getProductId());
+        if (productOpt.isPresent()) {
+            Product product = productOpt.get();
+            productRepository.save(product.withStock(product.getStock() + order.getQuantity()));
+        }
+
+        resp.setStatus(HttpServletResponse.SC_OK);
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "Order cancelled successfully");
+        writeJson(resp, result);
+    }
+
+    private OrderView toView(Order order) {
+        Optional<Product> productOpt = productRepository.findById(order.getProductId());
+        String productName = productOpt.map(Product::getName).orElse("Unknown Product");
+        double unitPrice = productOpt.map(Product::getPrice).orElse(0.0d);
+
+        Optional<User> farmerOpt = userRepository.findById(order.getFarmerId());
+        String farmerName = farmerOpt.map(User::getFullName).orElse("Unknown Farmer");
+        String farmerLocation = farmerOpt.map(User::getLocation).orElse("Unknown");
+        String farmerPhone = farmerOpt.map(User::getPhone).orElse("Unknown");
+
+        String status = deriveStatus(order.getCreatedAt(), order.getStatus());
+        return new OrderView(
+                order.getId().toString(),
+                order.getProductId(),
+                productName,
+                farmerName,
+                farmerLocation,
+                farmerPhone,
+                order.getQuantity(),
+                unitPrice,
+                unitPrice * order.getQuantity(),
+                order.getLocation(),
+                order.getPhoneNumber(),
+                status,
+                order.getCreatedAt().toEpochMilli()
+        );
+    }
+
+    private String deriveStatus(Instant createdAt, String orderStatus) {
+        if ("CANCELLED".equals(orderStatus)) {
+            return "CANCELLED";
+        }
+        if (orderStatus != null && !"ACTIVE".equals(orderStatus)) {
+            return orderStatus;
+        }
+        long minutes = Duration.between(createdAt, Instant.now()).toMinutes();
+        if (minutes < 3) {
+            return "PLACED";
+        }
+        if (minutes < 8) {
+            return "PACKING";
+        }
+        if (minutes < 20) {
+            return "IN_TRANSIT";
+        }
+        return "DELIVERED";
     }
 
     private Long parseProductId(String raw) {
@@ -217,6 +345,50 @@ public class CustomerOrderServlet extends HttpServlet {
 
         public void setPhoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
+        }
+    }
+
+    public static class OrderView {
+        public String id;
+        public long productId;
+        public String productName;
+        public String farmerName;
+        public String farmerLocation;
+        public String farmerPhone;
+        public int quantity;
+        public double unitPrice;
+        public double totalPrice;
+        public String deliveryLocation;
+        public String deliveryPhone;
+        public String status;
+        public long createdAtMs;
+
+        public OrderView(String id,
+                         long productId,
+                         String productName,
+                         String farmerName,
+                         String farmerLocation,
+                         String farmerPhone,
+                         int quantity,
+                         double unitPrice,
+                         double totalPrice,
+                         String deliveryLocation,
+                         String deliveryPhone,
+                         String status,
+                         long createdAtMs) {
+            this.id = id;
+            this.productId = productId;
+            this.productName = productName;
+            this.farmerName = farmerName;
+            this.farmerLocation = farmerLocation;
+            this.farmerPhone = farmerPhone;
+            this.quantity = quantity;
+            this.unitPrice = unitPrice;
+            this.totalPrice = totalPrice;
+            this.deliveryLocation = deliveryLocation;
+            this.deliveryPhone = deliveryPhone;
+            this.status = status;
+            this.createdAtMs = createdAtMs;
         }
     }
 }

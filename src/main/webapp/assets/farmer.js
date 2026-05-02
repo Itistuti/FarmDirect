@@ -173,24 +173,31 @@ function loadProducts() {
         .then(([productData, orderData]) => {
             const products = productData.products || [];
             const orders = orderData.orders || [];
-            const ordersByProductId = groupOrdersByProductId(orders);
 
-            renderProducts(products, ordersByProductId);
-            updateStats(products);
+            renderOrdersPanel(orders);
+            renderProducts(products);
+            updateStats(products, orders.length);
         })
         .catch(error => {
             console.error('Error:', error);
+            const oc = document.getElementById('orders-container');
+            if (oc) {
+                oc.innerHTML = '<p class="muted" style="margin: 0 0 12px;">Could not load orders. Refresh the page to try again.</p>';
+            }
+            const statOrders = document.getElementById('stat-orders');
+            if (statOrders) {
+                statOrders.textContent = '0';
+            }
             showFlash('Error loading products: ' + error.message, 'error');
         });
 }
 
-function renderProducts(products, ordersByProductId) {
+function renderProducts(products) {
     const container = document.getElementById('products-container');
 
     if (!products || products.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">🌱</div>
                 <p>No products yet. Add your first vegetable listing to get started!</p>
             </div>
         `;
@@ -198,7 +205,6 @@ function renderProducts(products, ordersByProductId) {
     }
 
     container.innerHTML = products.map(product => {
-        const orders = (ordersByProductId && ordersByProductId[String(product.id)]) || [];
         return `
         <div class="product-card">
             <div class="product-info">
@@ -214,17 +220,6 @@ function renderProducts(products, ordersByProductId) {
                 </div>
             </div>
 
-            <div class="product-orders">
-                <h4>Orders</h4>
-                ${orders.length === 0 ? `<div class="muted">No orders yet.</div>` : orders.map(order => `
-                    <div class="order-item">
-                        <div><strong>${escapeHtml(order.customerName || '')}</strong> ordered <strong>${order.quantity} kg</strong></div>
-                        <div>Location: ${escapeHtml(order.location || '')}</div>
-                        <div>Phone number: ${escapeHtml(order.phoneNumber || '')}</div>
-                    </div>
-                `).join('')}
-            </div>
-
             <div class="product-actions">
                 <button class="btn-edit" onclick="editProduct('${product.id}')">Edit</button>
                 <button class="btn-delete" onclick="deleteProduct('${product.id}')">Delete</button>
@@ -234,26 +229,139 @@ function renderProducts(products, ordersByProductId) {
     }).join('');
 }
 
-function groupOrdersByProductId(orders) {
-    const map = {};
-    if (!orders) {
-        return map;
+function renderOrdersPanel(orders) {
+    const container = document.getElementById('orders-container');
+    if (!container) {
+        return;
     }
-    orders.forEach(order => {
-        const key = String(order.productId);
-        if (!map[key]) {
-            map[key] = [];
-        }
-        map[key].push(order);
+    if (!orders || orders.length === 0) {
+        container.innerHTML = '<p class="muted" style="margin: 0 0 12px; font-size: 14px;">No customer orders yet. When buyers place orders for your products, they will appear here with delivery details.</p>';
+        return;
+    }
+
+    const sorted = [...orders].sort((a, b) => {
+        const ta = orderTimestampMs(a);
+        const tb = orderTimestampMs(b);
+        return tb - ta;
     });
-    return map;
+
+    container.innerHTML = sorted.map(order => {
+        const isCancelled = order.status === 'CANCELLED';
+        const isDelivered = order.status === 'DELIVERED';
+        
+        return `
+        <article class="order-card" style="${isCancelled ? 'opacity: 0.7;' : ''}">
+            <div class="order-card-header">
+                <span class="order-card-product">${escapeHtml(order.productName || 'Product')}</span>
+                <span class="order-card-date">${escapeHtml(formatOrderPlaced(order))}</span>
+            </div>
+            <div>
+                <div class="order-card-label">Buyer</div>
+                <div class="order-card-value">${escapeHtml(order.customerName || 'Unknown')}</div>
+            </div>
+            <div>
+                <div class="order-card-label">Quantity</div>
+                <div class="order-card-value">${escapeHtml(String(order.quantity))} kg</div>
+            </div>
+            <div>
+                <div class="order-card-label">Delivery location</div>
+                <div class="order-card-value">${escapeHtml(order.location || 'Not provided')}</div>
+            </div>
+            <div>
+                <div class="order-card-label">Buyer phone</div>
+                <div class="order-card-value">${escapeHtml(order.phoneNumber || 'Not provided')}</div>
+            </div>
+            <div style="grid-column: 1 / -1; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e5e7eb;">
+                <div class="order-card-label">Status Update</div>
+                ${isCancelled ? `
+                    <div style="color: #dc3545; font-weight: bold;">CANCELLED</div>
+                ` : `
+                    <select class="status-select" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px;" 
+                        onchange="updateOrderStatus('${order.id}', this.value)" ${isDelivered ? 'disabled' : ''}>
+                        <option value="PLACED" ${order.status === 'PLACED' ? 'selected' : ''}>Placed</option>
+                        <option value="PACKING" ${order.status === 'PACKING' ? 'selected' : ''}>Packing</option>
+                        <option value="IN_TRANSIT" ${order.status === 'IN_TRANSIT' ? 'selected' : ''}>In Transit</option>
+                        <option value="DELIVERED" ${order.status === 'DELIVERED' ? 'selected' : ''}>Delivered</option>
+                    </select>
+                `}
+            </div>
+        </article>
+        `;
+    }).join('');
 }
 
-function updateStats(products) {
+function updateOrderStatus(orderId, newStatus) {
+    fetch('api/farmer/orders/' + orderId + '/status', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => {
+        if (response.ok) {
+            showFlash('Order status updated', 'success');
+            loadProducts(); // refresh orders list
+        } else {
+            return response.json().then(data => {
+                showFlash(data.error || 'Failed to update order status', 'error');
+                loadProducts();
+            });
+        }
+    })
+    .catch(err => {
+        showFlash('Network error', 'error');
+        loadProducts();
+    });
+}
+
+function orderTimestampMs(order) {
+    const raw = order && order.createdAt;
+    if (raw == null) {
+        return 0;
+    }
+    if (typeof raw === 'number') {
+        return raw < 1e12 ? raw * 1000 : raw;
+    }
+    if (typeof raw === 'string') {
+        const t = Date.parse(raw);
+        return Number.isNaN(t) ? 0 : t;
+    }
+    if (Array.isArray(raw) && raw.length > 0) {
+        const sec = Number(raw[0]);
+        const nano = raw.length > 1 ? Number(raw[1]) : 0;
+        if (!Number.isNaN(sec)) {
+            return sec * 1000 + Math.floor(nano / 1e6);
+        }
+    }
+    if (typeof raw === 'object' && raw !== null && typeof raw.epochSecond === 'number') {
+        const sec = raw.epochSecond;
+        const nano = typeof raw.nano === 'number' ? raw.nano : 0;
+        return sec * 1000 + Math.floor(nano / 1e6);
+    }
+    return 0;
+}
+
+function formatOrderPlaced(order) {
+    const ms = orderTimestampMs(order);
+    if (!ms) {
+        return 'Date unknown';
+    }
+    return new Date(ms).toLocaleString();
+}
+
+function updateStats(products, orderCount) {
     const total = products.length;
-    
+
     const totalEl = document.getElementById('stat-total');
-    if (totalEl) totalEl.textContent = total;
+    if (totalEl) {
+        totalEl.textContent = total;
+    }
+    const ordersEl = document.getElementById('stat-orders');
+    if (ordersEl) {
+        ordersEl.textContent = typeof orderCount === 'number' ? orderCount : 0;
+    }
 }
 
 function showFlash(message, type = 'info') {
@@ -282,7 +390,7 @@ function formatPrice(value) {
     if (typeof value !== 'number' || Number.isNaN(value)) {
         return '';
     }
-    return value.toFixed(2);
+    return 'Rs. ' + value.toFixed(2);
 }
 
 function logout() {

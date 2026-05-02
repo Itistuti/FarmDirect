@@ -14,6 +14,7 @@ public final class Order {
     private final String location;
     private final String phoneNumber;
     private final Instant createdAt;
+    private final String status;
 
     public Order(long productId,
                  UUID farmerId,
@@ -22,7 +23,7 @@ public final class Order {
                  int quantity,
                  String location,
                  String phoneNumber) {
-        this(UUID.randomUUID(), productId, farmerId, customerId, customerName, quantity, location, phoneNumber, Instant.now());
+        this(UUID.randomUUID(), productId, farmerId, customerId, customerName, quantity, location, phoneNumber, Instant.now(), "ACTIVE");
     }
 
     public Order(UUID id,
@@ -33,7 +34,8 @@ public final class Order {
                  int quantity,
                  String location,
                  String phoneNumber,
-                 Instant createdAt) {
+                 Instant createdAt,
+                 String status) {
         this.id = Objects.requireNonNull(id, "id");
         this.productId = productId;
         this.farmerId = Objects.requireNonNull(farmerId, "farmerId");
@@ -43,6 +45,7 @@ public final class Order {
         this.location = Objects.requireNonNull(location, "location");
         this.phoneNumber = Objects.requireNonNull(phoneNumber, "phoneNumber");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
+        this.status = status != null ? status : "ACTIVE";
     }
 
     public UUID getId() {
@@ -79,5 +82,13 @@ public final class Order {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Order withStatus(String newStatus) {
+        return new Order(id, productId, farmerId, customerId, customerName, quantity, location, phoneNumber, createdAt, newStatus);
     }
 }

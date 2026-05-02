@@ -18,17 +18,108 @@
                     <script src="assets/auth.js" defer></script>
                     <script src="assets/farmer.js" defer></script>
                     <style>
+                        /* Make this dashboard wider than global container */
+                        body[data-page="farmer-dashboard"] .container {
+                            max-width: 1240px;
+                        }
+
                         .farmer-dashboard {
                             display: grid;
                             grid-template-columns: 1fr 2fr;
                             gap: 24px;
                             margin-top: 24px;
+                            align-items: start;
+                        }
+
+                        .main-column {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 24px;
+                            min-width: 0;
+                            align-items: start;
                         }
 
                         @media (max-width: 900px) {
                             .farmer-dashboard {
                                 grid-template-columns: 1fr;
                             }
+
+                            .main-column {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+
+                        .orders-section {
+                            background: #fff;
+                            border: 1px solid #e0e0e0;
+                            border-radius: 8px;
+                            padding: 16px 16px 8px;
+                        }
+
+                        .orders-section .section-header {
+                            margin-bottom: 12px;
+                        }
+
+                        .orders-list {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px;
+                            max-height: 420px;
+                            overflow-y: auto;
+                        }
+
+                        .order-card {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 10px 16px;
+                            padding: 12px 14px;
+                            background: #f9fafb;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 8px;
+                            font-size: 13px;
+                        }
+
+                        @media (max-width: 700px) {
+                            .order-card {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+
+                        .order-card-label {
+                            font-size: 11px;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 0.04em;
+                            color: #6b7280;
+                            margin-bottom: 2px;
+                        }
+
+                        .order-card-value {
+                            color: #111827;
+                            word-break: break-word;
+                        }
+
+                        .order-card-header {
+                            grid-column: 1 / -1;
+                            display: flex;
+                            flex-wrap: wrap;
+                            justify-content: space-between;
+                            align-items: baseline;
+                            gap: 8px;
+                            padding-bottom: 8px;
+                            margin-bottom: 4px;
+                            border-bottom: 1px dashed #e5e7eb;
+                        }
+
+                        .order-card-product {
+                            font-weight: 700;
+                            font-size: 15px;
+                            color: #166534;
+                        }
+
+                        .order-card-date {
+                            font-size: 12px;
+                            color: #6b7280;
                         }
 
                         .sidebar-form {
@@ -174,7 +265,7 @@
                             border-radius: 8px;
                             padding: 16px;
                             display: grid;
-                            grid-template-columns: 1fr 1fr auto;
+                            grid-template-columns: 1fr auto;
                             gap: 16px;
                             align-items: start;
                             transition: box-shadow 0.2s;
@@ -256,31 +347,6 @@
                             min-width: 100px;
                         }
 
-                        .product-orders {
-                            border: 1px solid #e0e0e0;
-                            border-radius: 8px;
-                            padding: 12px;
-                            background: #f9f9f9;
-                            font-size: 12px;
-                            color: #333;
-                        }
-
-                        .product-orders h4 {
-                            margin: 0 0 8px 0;
-                            font-size: 13px;
-                        }
-
-                        .order-item {
-                            padding: 8px;
-                            border-radius: 6px;
-                            background: white;
-                            border: 1px solid #e0e0e0;
-                        }
-
-                        .order-item+.order-item {
-                            margin-top: 8px;
-                        }
-
                         .product-actions button {
                             padding: 8px 12px;
                             border: none;
@@ -316,8 +382,19 @@
                         }
 
                         .empty-state-icon {
-                            font-size: 48px;
-                            margin-bottom: 16px;
+                            width: 72px;
+                            height: 72px;
+                            margin: 0 auto 16px;
+                            border-radius: 50%;
+                            background: #e8f5e9;
+                            border: 2px solid #1bcc4b;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 14px;
+                            font-weight: 700;
+                            color: #166534;
+                            line-height: 1;
                         }
 
                         #flash-message {
@@ -404,21 +481,34 @@
                                     </form>
                                 </aside>
 
-                                <!-- Products Section -->
-                                <section class="products-section">
-                                    <div class="section-header">
-                                        <h2>Your Products <span
-                                                style="font-size: 16px; font-weight: normal; color: #666; margin-left: 8px;">(Total:
-                                                <span id="stat-total">0</span>)</span></h2>
-                                    </div>
-
-                                    <div id="products-container" class="products-list">
-                                        <div class="empty-state">
-                                            <div class="empty-state-icon"></div>
-                                            <p>No products yet. Add your first vegetable listing to get started!</p>
+                                <div class="main-column">
+                                    <!-- All customer orders (this farmer's products only) -->
+                                    <section class="orders-section" aria-labelledby="orders-heading">
+                                        <div class="section-header">
+                                            <h2 id="orders-heading">Customer orders <span
+                                                    style="font-size: 16px; font-weight: normal; color: #666; margin-left: 8px;">(<span
+                                                    id="stat-orders">0</span>)</span></h2>
                                         </div>
-                                    </div>
-                                </section>
+                                        <div id="orders-container" class="orders-list">
+                                            <p class="muted" style="margin: 0 0 12px; font-size: 14px;">Loading orders...</p>
+                                        </div>
+                                    </section>
+
+                                    <!-- Products Section -->
+                                    <section class="products-section">
+                                        <div class="section-header">
+                                            <h2>Your Products <span
+                                                    style="font-size: 16px; font-weight: normal; color: #666; margin-left: 8px;">(Total:
+                                                    <span id="stat-total">0</span>)</span></h2>
+                                        </div>
+
+                                        <div id="products-container" class="products-list">
+                                            <div class="empty-state">
+                                                <p>No products yet. Add your first vegetable listing to get started!</p>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
                             </div>
                         </div>
                     </div>

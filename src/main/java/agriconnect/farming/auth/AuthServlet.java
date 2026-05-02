@@ -73,6 +73,8 @@ public class AuthServlet extends HttpServlet {
     private String postAuthRedirect(User user) {
         if (user != null && user.getRole() == Role.FARMER) {
             return "/farmer-dashboard.jsp";
+        } else if (user != null && user.getRole() == Role.CUSTOMER) {
+            return "/customer-dashboard.jsp";
         }
         return "/dashboard.jsp";
     }

@@ -4,7 +4,7 @@ A Jakarta EE-based web application that connects farmers directly with customers
 
 ## Features
 
-### ✅ Implemented
+### Implemented
 - **Authentication System**
   - Multi-role registration (Farmer / Customer)
   - Secure login with hashed passwords (PBKDF2)
@@ -25,7 +25,7 @@ A Jakarta EE-based web application that connects farmers directly with customers
   - Dashboard with role-based routing
   - Farmer dashboard with full CRUD operations
 
-### 🚧 Coming Soon
+### Coming soon
 - Customer dashboard for browsing products
 - Shopping cart functionality
 - Order placement and tracking

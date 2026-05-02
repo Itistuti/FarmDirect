@@ -42,6 +42,27 @@ public final class UserRepository {
         }
     }
 
+    public Optional<User> findById(UUID id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+
+        String sql = "SELECT id, full_name, email, password_hash, role, location, phone, created_at_epoch_ms FROM users WHERE id = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, id.toString());
+            try (ResultSet rs = statement.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(mapRow(rs));
+            }
+        } catch (Exception ex) {
+            throw new IllegalStateException("Failed to read user from database by id", ex);
+        }
+    }
+
     public boolean existsByEmail(String email) {
         return findByEmail(email).isPresent();
     }
