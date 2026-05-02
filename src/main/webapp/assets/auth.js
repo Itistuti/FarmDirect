@@ -9,7 +9,10 @@ function renderFlashMessage() {
     const error = params.get('error');
     const text = error || message || '';
     if (!text) {
-        flash.classList.add('hidden');
+        const existing = (flash.textContent || '').trim();
+        if (!existing) {
+            flash.classList.add('hidden');
+        }
         return;
     }
 
@@ -29,7 +32,7 @@ async function loadSession() {
 
     const response = await fetch('api/auth/me', { credentials: 'include' }).catch(() => null);
     if (!response || !response.ok) {
-        window.location.href = 'login.html?error=' + encodeURIComponent('Please log in first');
+        window.location.href = 'login.jsp?error=' + encodeURIComponent('Please log in first');
         return;
     }
 
@@ -57,7 +60,7 @@ async function logout() {
         method: 'POST',
         credentials: 'include'
     }).catch(() => null);
-    window.location.href = 'login.html?message=' + encodeURIComponent('You have been logged out');
+    window.location.href = 'login.jsp?message=' + encodeURIComponent('You have been logged out');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

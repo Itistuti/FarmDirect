@@ -2,36 +2,37 @@ package agriconnect.farming.auth;
 
 import java.util.Locale;
 
-final class JsonSupport {
+public final class JsonSupport {
     private JsonSupport() {
     }
 
-    static String authJson(User user) {
+    public static String authJson(User user) {
         return "{" +
                 "\"authenticated\":true," +
                 "\"id\":\"" + escape(user.getId().toString()) + "\"," +
                 "\"fullName\":\"" + escape(user.getFullName()) + "\"," +
                 "\"email\":\"" + escape(user.getEmail()) + "\"," +
-                "\"role\":\"" + escape(user.getRole().name()) + "\"" +
+                "\"role\":\"" + escape(user.getRole().name()) + "\"," +
+                "\"location\":\"" + escape(user.getLocation() != null ? user.getLocation() : "") + "\"" +
                 "}";
     }
 
-    static String messageJson(String message) {
+    public static String messageJson(String message) {
         return "{\"message\":\"" + escape(message) + "\"}";
     }
 
-    static String roleMessageJson(User user, String message) {
+    public static String roleMessageJson(User user, String message) {
         return "{" +
                 "\"message\":\"" + escape(message) + "\"," +
                 "\"role\":\"" + escape(user.getRole().name()) + "\"" +
                 "}";
     }
 
-    static String errorJson(String message) {
+    public static String errorJson(String message) {
         return "{\"error\":\"" + escape(message) + "\"}";
     }
 
-    static String escape(String value) {
+    public static String escape(String value) {
         if (value == null) {
             return "";
         }

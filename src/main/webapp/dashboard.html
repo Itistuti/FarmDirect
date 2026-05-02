@@ -1,40 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - FarmDirect</title>
-    <link rel="stylesheet" href="assets/styles.css">
-    <script src="assets/auth.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecting…</title>
+  <meta http-equiv="refresh" content="0; url=dashboard.jsp" />
+  <script>
+    window.location.replace('dashboard.jsp');
+  </script>
 </head>
-<body data-page="dashboard">
-<div class="container">
-    <div class="card">
-        <div class="actions" style="justify-content: space-between; align-items: center;">
-            <div>
-                <span class="badge">Dashboard</span>
-                <h1 id="welcome-message">Checking session...</h1>
-                <p class="muted">Role: <strong id="role-badge">-</strong></p>
-            </div>
-            <button type="button" onclick="logout()" style="max-width: 180px;">Logout</button>
-        </div>
-
-        <div id="flash-message" class="flash"></div>
-
-        <div class="grid grid-2" style="margin-top: 24px;">
-            <div id="farmer-panel" class="panel hidden">
-                <h2>Farmer area</h2>
-                <p>Use this area to manage vegetable listings, stock, and order progress.</p>
-                <p><a id="farmer-link" href="#">Open protected farmer endpoint</a></p>
-            </div>
-            <div id="customer-panel" class="panel hidden">
-                <h2>Customer area</h2>
-                <p>Use this area to browse produce, place orders, and track your history.</p>
-                <p><a id="customer-link" href="#">Open protected customer endpoint</a></p>
-            </div>
-        </div>
-    </div>
-</div>
+<body>
+  <noscript><a href="dashboard.jsp">Continue to dashboard</a></noscript>
 </body>
 </html>
-

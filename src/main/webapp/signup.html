@@ -1,46 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign up - FarmDirect</title>
-    <link rel="stylesheet" href="assets/styles.css">
-    <script src="assets/auth.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecting…</title>
+  <meta http-equiv="refresh" content="0; url=signup.jsp" />
+  <script>
+    window.location.replace('signup.jsp');
+  </script>
 </head>
 <body>
-<div class="container">
-    <div class="card" style="max-width: 680px; margin: 0 auto;">
-        <span class="badge">Create account</span>
-        <h1>Register as a farmer or customer</h1>
-        <p class="muted">Choose the role that matches how you want to use FarmDirect.</p>
-        <div id="flash-message" class="flash"></div>
-        <form method="post" action="api/auth/signup" class="grid grid-2" style="gap: 16px;">
-            <div>
-                <label for="fullName">Full name</label>
-                <input id="fullName" name="fullName" type="text" placeholder="Your name" required>
-            </div>
-            <div>
-                <label for="email">Email address</label>
-                <input id="email" name="email" type="email" placeholder="Enter your Email" required>
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="At least 8 characters" minlength="8" required>
-            </div>
-            <div>
-                <label for="role">Account type</label>
-                <select id="role" name="role" required>
-                    <option value="">Select a role</option>
-                    <option value="FARMER">Farmer</option>
-                    <option value="CUSTOMER">Customer</option>
-                </select>
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <button type="submit">Create account</button>
-            </div>
-        </form>
-        <p class="muted" style="margin-top: 16px;">Already registered? <a href="login.html">Login</a></p>
-    </div>
-</div>
+  <noscript><a href="signup.jsp">Continue to signup</a></noscript>
 </body>
 </html>

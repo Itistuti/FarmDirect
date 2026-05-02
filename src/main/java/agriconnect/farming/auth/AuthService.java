@@ -15,7 +15,7 @@ public final class AuthService {
         return INSTANCE;
     }
 
-    public User register(String fullName, String email, String password, Role role) {
+    public User register(String fullName, String email, String password, Role role, String location, String phone) {
         String cleanName = requireText(fullName, "Full name is required");
         String cleanEmail = User.normalizeEmail(requireText(email, "Email is required"));
         String cleanPassword = requireText(password, "Password is required");
@@ -28,7 +28,7 @@ public final class AuthService {
             throw new IllegalArgumentException("An account with that email already exists");
         }
 
-        User user = new User(cleanName, cleanEmail, passwordHasher.hash(cleanPassword), role);
+        User user = new User(cleanName, cleanEmail, passwordHasher.hash(cleanPassword), role, location, phone);
         userRepository.save(user);
         return user;
     }
