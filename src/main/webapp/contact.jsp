@@ -155,11 +155,11 @@
                 <form action="#" method="POST" class="grid" style="gap: 16px;">
                     <div>
                         <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" placeholder="Your Name" required>
+                        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
                     </div>
                     <div>
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
                     </div>
 
                     <div>
@@ -210,7 +210,7 @@
                     <h3 style="margin-bottom: 16px; font-size: 20px;">Helpful Links</h3>
                     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
                         <li><a href="#" style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg> Frequently Asked Questions (FAQ)</a></li>
-                        <li><a href="#" style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg> How FarmDirect Works</a></li>
+                        <li><a href="services.jsp" style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg> How FarmDirect Works</a></li>
                     </ul>
                 </div>
             </div>
@@ -246,24 +246,9 @@
         </div>
     </section>
 
-    <footer class="footer">
-        <div class="container footer-content">
-            <div class="footer-brand">
-                <h3>FarmDirect</h3>
-                <p>Connecting farmers and customers directly for fresh, fair, and sustainable local produce.</p>
-            </div>
-            <div class="footer-contact">
-                <h4>Quick Links</h4>
-                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-                    <li><a href="privacy.jsp" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a></li>
-                    <li><a href="terms.jsp" style="color: #9ca3af; text-decoration: none;">Terms of Service</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container" style="padding-top: 0; padding-bottom: 0;">
-                <p style="margin: 0;">&copy; 2026 FarmDirect. All rights reserved. Connecting farms to tables.</p>
-            </div>
+    <footer class="footer" style="padding: 24px 16px;">
+        <div class="container" style="text-align: center; color: #9ca3af;">
+            <p style="margin: 0;">&copy; 2026 FarmDirect. All rights reserved. Connecting farms to tables.</p>
         </div>
     </footer>
 </body>
