@@ -35,34 +35,29 @@
         .contact-section {
             padding: 60px 16px;
         }
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
         .contact-info-card {
-            background: #f9fafb;
-            padding: 32px;
+            background: #ffffff;
+            padding: 40px 32px;
             border-radius: 16px;
             border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
         }
-        .contact-info-card h3 {
+        .contact-info-card h4 {
             color: #1f2937;
-            margin-bottom: 24px;
-            font-size: 24px;
+            margin-bottom: 12px;
+            font-size: 20px;
         }
-        .info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .info-item .icon {
-            color: #1bcc4b;
-        }
-        .info-item h4 {
-            margin: 0 0 8px 0;
-            color: #374151;
-        }
-        .info-item p {
-            margin: 0;
+        .contact-info-card p {
             color: #6b7280;
-            line-height: 1.5;
+            line-height: 1.6;
+            margin: 0;
         }
         .support-grid {
             display: grid;
@@ -72,8 +67,8 @@
         }
         .support-card {
             background: #ffffff;
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 16px;
+            padding: 32px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #f3f4f6;
             text-align: center;
@@ -89,6 +84,8 @@
         }
         .support-card a {
             font-weight: bold;
+            color: #1bcc4b;
+            text-decoration: none;
         }
         .social-links {
             display: flex;
@@ -97,32 +94,9 @@
             margin-top: 24px;
         }
         .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #e0f8e6;
             color: #1bcc4b;
-            transition: all 0.2s;
-        }
-        .social-links a:hover {
-            background: #1bcc4b;
-            color: #ffffff;
-        }
-        textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font: inherit;
-            resize: vertical;
-            min-height: 120px;
-        }
-        textarea:focus {
-            outline: 2px solid #86efac;
-            border-color: #16a34a;
+            text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -148,71 +122,20 @@
     </header>
 
     <section class="contact-section container">
-        <div class="grid grid-2">
-            <!-- Left Column: Form -->
-            <div class="card">
-                <h2 style="margin-bottom: 24px; color: #1f2937;">Send us a Message</h2>
-                <form action="#" method="POST" class="grid" style="gap: 16px;">
-                    <div>
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
-                    </div>
-                    <div>
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    </div>
-
-                    <div>
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" placeholder="How can we help you?" required></textarea>
-                    </div>
-                    <button type="submit" class="btn-primary" style="margin-top: 8px;">Send Message</button>
-                </form>
+        <div class="contact-info-grid">
+            <div class="contact-info-card">
+                <h4>Phone</h4>
+                <p>+977 98*******<br><span style="font-size: 0.9em; color: #9ca3af;">Mon-Fri from 9am to 6pm</span></p>
             </div>
 
-            <!-- Right Column: Info & More -->
-            <div>
-                <div class="contact-info-card" style="margin-bottom: 24px;">
-                    <h3>Direct Contact</h3>
-                    
-                    <div class="info-item">
-                        <div class="icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                        </div>
-                        <div>
-                            <h4>Phone</h4>
-                            <p>+977 98*******<br><span style="font-size: 0.9em; color: #9ca3af;">Mon-Fri from 9am to 6pm</span></p>
-                        </div>
-                    </div>
+            <div class="contact-info-card">
+                <h4>Email</h4>
+                <p>support@farmdirect.com.np<br><span style="font-size: 0.9em; color: #1bcc4b; font-weight: 500;">Responses within 24 hours</span></p>
+            </div>
 
-                    <div class="info-item">
-                        <div class="icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-                        </div>
-                        <div>
-                            <h4>Email</h4>
-                            <p>support@farmdirect.com.np<br><span style="font-size: 0.9em; color: #1bcc4b; font-weight: 500;">Responses provided within 24 hours</span></p>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        </div>
-                        <div>
-                            <h4>Location</h4>
-                            <p>Kathmandu, Nepal<br><span style="font-size: 0.9em; color: #9ca3af;">Proudly serving the entire nation.</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-bottom: 24px;">
-                    <h3 style="margin-bottom: 16px; font-size: 20px;">Helpful Links</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-                        <li><a href="#" style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg> Frequently Asked Questions (FAQ)</a></li>
-                        <li><a href="services.jsp" style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg> How FarmDirect Works</a></li>
-                    </ul>
-                </div>
+            <div class="contact-info-card">
+                <h4>Location</h4>
+                <p>Kathmandu, Nepal<br><span style="font-size: 0.9em; color: #9ca3af;">Proudly serving the entire nation.</span></p>
             </div>
         </div>
         
@@ -230,18 +153,19 @@
             </div>
         </div>
 
+        <div style="text-align: center; margin-top: 60px; margin-bottom: 24px;">
+            <h3 style="color: #374151; font-size: 20px;">Helpful Links</h3>
+            <ul style="list-style: none; padding: 0; margin: 16px 0 0 0; display: flex; justify-content: center; gap: 24px;">
+                <li><a href="services.jsp" style="font-weight: 500; color: #1bcc4b; text-decoration: none;">How FarmDirect Works</a></li>
+            </ul>
+        </div>
+
         <div style="text-align: center; margin-top: 60px;">
             <h3 style="color: #374151;">Connect with us on Social Media</h3>
             <div class="social-links">
-                <a href="#" aria-label="Facebook">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                </a>
-                <a href="#" aria-label="Instagram">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                </a>
-                <a href="#" aria-label="WhatsApp">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                </a>
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">WhatsApp</a>
             </div>
         </div>
     </section>
