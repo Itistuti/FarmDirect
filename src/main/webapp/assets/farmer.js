@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             if (data.role !== 'FARMER') {
-                window.location.href = 'dashboard.jsp';
+                window.location.href = 'customer-dashboard.jsp';
                 return;
             }
             loadProducts();

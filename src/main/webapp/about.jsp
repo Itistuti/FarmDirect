@@ -409,6 +409,7 @@ button:hover {
                 <li><a href="index.jsp">Home</a></li>
                 <li><a href="about.jsp" style="color: #1bcc4b;">About Us</a></li>
                 <li><a href="services.jsp">Services</a></li>
+                <li><a href="contact.jsp">Contact Us</a></li>
             </ul>
             <a href="<%= dashboardLink %>" class="btn-primary"><%= authBtnText %></a>
         </div>

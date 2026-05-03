@@ -76,7 +76,7 @@ public class AuthServlet extends HttpServlet {
         } else if (user != null && user.getRole() == Role.CUSTOMER) {
             return "/customer-dashboard.jsp";
         }
-        return "/dashboard.jsp";
+        return "/index.jsp";
     }
 
     private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {

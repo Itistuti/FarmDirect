@@ -12,6 +12,12 @@
 
 <body>
     <div class="container">
+        <div style="margin-bottom: 1.5rem; text-align: left; max-width: 560px; margin-left: auto; margin-right: auto;">
+            <a href="index.jsp" style="text-decoration: none; color: var(--color-primary); font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Back to Home
+            </a>
+        </div>
         <div class="card" style="max-width: 560px; margin: 0 auto;">
             <span class="badge">Login</span>
             <h1>Welcome to FarmDirect</h1>
