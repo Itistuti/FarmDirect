@@ -59,4 +59,3 @@ logs/
 .env.*.local
 
 ### Dependencies ###
-.mvn/
