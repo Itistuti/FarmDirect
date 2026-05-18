@@ -16,18 +16,18 @@
     <link rel="stylesheet" href="assets/styles.css">
     <style>
         .contact-header {
-            background: linear-gradient(135deg, #e0f8e6 0%, #ffffff 100%);
+            background: linear-gradient(135deg, rgba(163, 177, 138, 0.25) 0%, #FAF9F6 100%);
             padding: 60px 16px;
             text-align: center;
         }
         .contact-header h1 {
             font-size: 40px;
-            color: #1f2937;
+            color: var(--color-forest);
             margin-bottom: 16px;
         }
         .contact-header p {
             font-size: 18px;
-            color: #4b5563;
+            color: var(--color-muted);
             max-width: 600px;
             margin: 0 auto;
             line-height: 1.6;
@@ -42,20 +42,20 @@
             margin-bottom: 60px;
         }
         .contact-info-card {
-            background: #ffffff;
+            background: var(--color-surface);
             padding: 40px 32px;
             border-radius: 16px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-card);
             text-align: center;
         }
         .contact-info-card h4 {
-            color: #1f2937;
+            color: var(--color-forest);
             margin-bottom: 12px;
             font-size: 20px;
         }
         .contact-info-card p {
-            color: #6b7280;
+            color: var(--color-muted);
             line-height: 1.6;
             margin: 0;
         }
@@ -66,25 +66,25 @@
             margin-top: 40px;
         }
         .support-card {
-            background: #ffffff;
+            background: var(--color-surface);
             border-radius: 16px;
             padding: 32px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #f3f4f6;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--color-border);
             text-align: center;
         }
         .support-card h4 {
-            color: #166534;
+            color: var(--color-forest);
             font-size: 20px;
             margin-bottom: 12px;
         }
         .support-card p {
-            color: #6b7280;
+            color: var(--color-muted);
             margin-bottom: 16px;
         }
         .support-card a {
             font-weight: bold;
-            color: #1bcc4b;
+            color: var(--color-warm);
             text-decoration: none;
         }
         .social-links {
@@ -94,7 +94,7 @@
             margin-top: 24px;
         }
         .social-links a {
-            color: #1bcc4b;
+            color: var(--color-primary);
             text-decoration: none;
             font-weight: bold;
         }
@@ -108,7 +108,7 @@
                 <li><a href="index.jsp">Home</a></li>
                 <li><a href="about.jsp">About Us</a></li>
                 <li><a href="services.jsp">Services</a></li>
-                <li><a href="contact.jsp" style="color: #1bcc4b;">Contact Us</a></li>
+                <li><a href="contact.jsp" style="color: var(--color-primary);">Contact Us</a></li>
             </ul>
             <a href="<%= dashboardLink %>" class="btn-primary"><%= authBtnText %></a>
         </div>
@@ -125,17 +125,17 @@
         <div class="contact-info-grid">
             <div class="contact-info-card">
                 <h4>Phone</h4>
-                <p>+977 98*******<br><span style="font-size: 0.9em; color: #9ca3af;">Mon-Fri from 9am to 6pm</span></p>
+                <p>+977 98*******<br><span style="font-size: 0.9em; color: var(--color-muted);">Mon-Fri from 9am to 6pm</span></p>
             </div>
 
             <div class="contact-info-card">
                 <h4>Email</h4>
-                <p>support@farmdirect.com.np<br><span style="font-size: 0.9em; color: #1bcc4b; font-weight: 500;">Responses within 24 hours</span></p>
+                <p>support@farmdirect.com.np<br><span style="font-size: 0.9em; color: var(--color-primary); font-weight: 500;">Responses within 24 hours</span></p>
             </div>
 
             <div class="contact-info-card">
                 <h4>Location</h4>
-                <p>Kathmandu, Nepal<br><span style="font-size: 0.9em; color: #9ca3af;">Proudly serving the entire nation.</span></p>
+                <p>Kathmandu, Nepal<br><span style="font-size: 0.9em; color: var(--color-muted);">Proudly serving the entire nation.</span></p>
             </div>
         </div>
         
@@ -154,14 +154,14 @@
         </div>
 
         <div style="text-align: center; margin-top: 60px; margin-bottom: 24px;">
-            <h3 style="color: #374151; font-size: 20px;">Helpful Links</h3>
+            <h3 style="color: var(--color-forest); font-size: 20px;">Helpful Links</h3>
             <ul style="list-style: none; padding: 0; margin: 16px 0 0 0; display: flex; justify-content: center; gap: 24px;">
-                <li><a href="services.jsp" style="font-weight: 500; color: #1bcc4b; text-decoration: none;">How FarmDirect Works</a></li>
+                <li><a href="services.jsp" style="font-weight: 500; color: var(--color-primary); text-decoration: none;">How FarmDirect Works</a></li>
             </ul>
         </div>
 
         <div style="text-align: center; margin-top: 60px;">
-            <h3 style="color: #374151;">Connect with us on Social Media</h3>
+            <h3 style="color: var(--color-forest);">Connect with us on Social Media</h3>
             <div class="social-links">
                 <a href="#">Facebook</a>
                 <a href="#">Instagram</a>
@@ -171,7 +171,7 @@
     </section>
 
     <footer class="footer" style="padding: 24px 16px;">
-        <div class="container" style="text-align: center; color: #9ca3af;">
+        <div class="container" style="text-align: center; color: var(--color-muted);">
             <p style="margin: 0;">&copy; 2026 FarmDirect. All rights reserved. Connecting farms to tables.</p>
         </div>
     </footer>
